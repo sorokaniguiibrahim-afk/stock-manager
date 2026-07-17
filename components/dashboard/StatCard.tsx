@@ -1,21 +1,24 @@
-type StatCardProps = {
+import { Card, CardContent } from "@/components/ui/card";
+import { LucideIcon } from "lucide-react";
+
+type Props = {
   title: string;
   value: string | number;
-  icon: string;
+  icon: LucideIcon;
 };
 
-export default function StatCard({ title, value, icon }: StatCardProps) {
+export default function StatCard({ title, value, icon: Icon }: Props) {
   return (
-    <div className="bg-white rounded-xl shadow-md p-6">
-      <div className="flex items-center justify-between">
+    <Card className="transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+      <CardContent className="flex items-center justify-between p-6">
         <div>
-          <p className="text-gray-500 text-sm">{title}</p>
+          <p className="text-sm text-muted-foreground">{title}</p>
 
-          <h2 className="text-3xl font-bold mt-2">{value}</h2>
+          <h2 className="mt-2 text-3xl font-bold">{value}</h2>
         </div>
 
-        <span className="text-4xl">{icon}</span>
-      </div>
-    </div>
+        <Icon className="h-10 w-10 text-blue-600" />
+      </CardContent>
+    </Card>
   );
 }

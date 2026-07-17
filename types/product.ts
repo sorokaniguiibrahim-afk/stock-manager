@@ -8,4 +8,5 @@ export interface Product {
   quantity: number;
   alert_threshold: number;
   created_at: string;
+  user_id: string;
 }

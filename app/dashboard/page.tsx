@@ -1,25 +1,161 @@
-import StatCard from "@/components/dashboard/StatCard";
+"use client";
+
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import DashboardCards from "@/components/dashboard/DashboardCards";
+import LowStockProducts from "@/components/dashboard/LowStockProducts";
+import StockByCategoryChart from "@/components/dashboard/StockByCategoryChart";
+import RecentProducts from "@/components/dashboard/RecentProducts";
+
+import { getDashboardStats, DashboardStats } from "@/services/dashboardService";
 
 export default function DashboardPage() {
+  const [stats, setStats] = useState<DashboardStats>({
+    totalProducts: 0,
+    stockValue: 0,
+    lowStock: 0,
+    outOfStock: 0,
+    potentialProfit: 0,
+    lowStockProducts: [],
+    recentProducts: [],
+    stockByCategory: [],
+  });
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadStats() {
+      try {
+        const data = await getDashboardStats();
+
+        setStats(data);
+      } catch (error) {
+        console.error("Erreur chargement dashboard :", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadStats();
+  }, []);
+
+  if (loading) {
+    return (
+      <motion.div
+        initial={{
+          opacity: 0,
+        }}
+        animate={{
+          opacity: 1,
+        }}
+        className="py-10 text-center"
+      >
+        Chargement du dashboard...
+      </motion.div>
+    );
+  }
+
   return (
-    <>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">Tableau de bord</h1>
+    <motion.div
+      initial={{
+        opacity: 0,
+        y: 20,
+      }}
+      animate={{
+        opacity: 1,
+        y: 0,
+      }}
+      transition={{
+        duration: 0.5,
+      }}
+      className="space-y-6"
+    >
+      {/* HEADER */}
 
-        <p className="text-gray-500 mt-2">
-          Bienvenue dans votre espace de gestion.
-        </p>
-      </div>
+      <motion.div
+        initial={{
+          opacity: 0,
+          x: -20,
+        }}
+        animate={{
+          opacity: 1,
+          x: 0,
+        }}
+        transition={{
+          duration: 0.5,
+        }}
+      >
+        <h1 className="text-3xl font-bold">Dashboard</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-        <StatCard title="Produits" value={0} icon="📦" />
+        <p className="text-muted-foreground">Vue générale de votre stock.</p>
+      </motion.div>
 
-        <StatCard title="Valeur du stock" value="0 FCFA" icon="💰" />
+      {/* CARTES KPI */}
 
-        <StatCard title="Stock faible" value={0} icon="⚠️" />
+      <DashboardCards
+        totalProducts={stats.totalProducts}
+        stockValue={stats.stockValue}
+        lowStock={stats.lowStock}
+        outOfStock={stats.outOfStock}
+        potentialProfit={stats.potentialProfit}
+      />
 
-        <StatCard title="Valeur de vente" value="0 FCFA" icon="📈" />
-      </div>
-    </>
+      {/* GRAPHIQUE */}
+
+      <motion.div
+        initial={{
+          opacity: 0,
+          y: 30,
+        }}
+        animate={{
+          opacity: 1,
+          y: 0,
+        }}
+        transition={{
+          delay: 0.3,
+          duration: 0.5,
+        }}
+      >
+        <StockByCategoryChart data={stats.stockByCategory} />
+      </motion.div>
+
+      {/* ALERTES STOCK */}
+
+      <motion.div
+        initial={{
+          opacity: 0,
+          y: 30,
+        }}
+        animate={{
+          opacity: 1,
+          y: 0,
+        }}
+        transition={{
+          delay: 0.5,
+          duration: 0.5,
+        }}
+      >
+        <LowStockProducts products={stats.lowStockProducts} />
+      </motion.div>
+
+      {/* PRODUITS RECENTS */}
+
+      <motion.div
+        initial={{
+          opacity: 0,
+          y: 30,
+        }}
+        animate={{
+          opacity: 1,
+          y: 0,
+        }}
+        transition={{
+          delay: 0.7,
+          duration: 0.5,
+        }}
+      >
+        <RecentProducts products={stats.recentProducts} />
+      </motion.div>
+    </motion.div>
   );
 }

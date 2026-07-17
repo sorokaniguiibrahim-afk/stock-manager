@@ -2,11 +2,8 @@
 
 import { useState } from "react";
 import { signIn } from "@/services/authService";
-import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
-  const router = useRouter();
-
   const [form, setForm] = useState({
     email: "",
     password: "",
